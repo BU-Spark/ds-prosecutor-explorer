@@ -1,0 +1,13 @@
+# data: never commit
+*.parquet
+*.xlsx
+*.xls
+*.csv
+fa26/data/*
+!fa26/data/temp.txt
+
+# python / jupyter
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+.DS_Store
