@@ -11,7 +11,7 @@ Usage:  python check_duplicates.py --data data
 import argparse
 from pathlib import Path
 import pandas as pd
-from load_data import load
+from fa26.essex_hampden_eda.load_data import load
 
 
 def top_repeats(df, n=3):

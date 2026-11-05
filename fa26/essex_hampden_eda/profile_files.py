@@ -10,7 +10,7 @@ Usage:  python profile_files.py --data data
 import argparse
 from pathlib import Path
 import pandas as pd
-from load_data import FILES, load
+from fa26.essex_hampden_eda.load_data import FILES, load
 
 DATE_HINTS = ("date", "dt", "dspstn", "crm", "evnt", "sts")
 

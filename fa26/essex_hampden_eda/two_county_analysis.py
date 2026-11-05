@@ -23,7 +23,7 @@ import argparse
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from load_data import load, charge_type, MV_CHAPTERS, HAMPDEN_COURTS
+from fa26.essex_hampden_eda.load_data import load, charge_type, MV_CHAPTERS, HAMPDEN_COURTS
 
 CRIMINAL = ["Dismissed/nolle", "Guilty/plea", "CWF/diversion", "Acquitted"]
 TYPES = ["Person", "Property", "Drugs", "Weapons", "Vs. justice", "Restraining order", "Public order"]
