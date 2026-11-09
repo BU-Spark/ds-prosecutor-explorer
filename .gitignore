@@ -2,7 +2,7 @@ data/
 cache/
 output/
 *.xlsx
-data/
-cache/
-output/
-*.xlsx
+.DS_Store
+.venv/
+.ipynb_checkpoints/
+__pycache__/
