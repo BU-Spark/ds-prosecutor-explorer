@@ -1,8 +1,13 @@
+# data
 data/
 cache/
 output/
+*.parquet
 *.xlsx
-.DS_Store
-.venv/
-.ipynb_checkpoints/
+*.xls
+
+# python / jupyter
 __pycache__/
+.ipynb_checkpoints/
+.venv/
+.DS_Store
