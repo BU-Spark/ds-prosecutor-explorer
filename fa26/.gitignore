@@ -4,3 +4,4 @@
 *_outputs/
 .ipynb_checkpoints/
 __pycache__/
+!**/published-results/*.csv
