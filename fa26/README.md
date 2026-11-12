@@ -1,30 +1,78 @@
-# Fall 2026 | Prosecutor Explorer
 
-Open a notebook for analysis code and embedded charts. The chart galleries also work as ordinary GitHub Markdown pages.
+<h1 align="center">
+  <br>
+  <a href="https://www.bu.edu/spark/" target="_blank"><img src="https://www.bu.edu/spark/files/2023/08/logo.png" alt="BUSpark" width="200"></a>
+  <br>
+  Project README Template <change to project name>
+  <br>
+</h1>
 
-| County | Notebook | Figures |
-| --- | --- | --- |
-| berkshire | [berkshire_eda_2017_2024](berkshire/berkshire_eda_2017_2024.ipynb) | [View 42 charts](berkshire/figures/berkshire_eda_2017_2024/README.md) |
-| berkshire | [berkshire_team_objectives_23_2017_2024](berkshire/berkshire_team_objectives_23_2017_2024.ipynb) | [View 20 charts](berkshire/figures/berkshire_team_objectives_23_2017_2024/README.md) |
-| cape and island | [cape_and_islands_eda_2017_2024](cape%20and%20island/cape_and_islands_eda_2017_2024.ipynb) | [View 32 charts](cape%20and%20island/figures/cape_and_islands_eda_2017_2024/README.md) |
-| cape and island | [cape_and_islands_team_objectives_23_2017_2024](cape%20and%20island/cape_and_islands_team_objectives_23_2017_2024.ipynb) | [View 23 charts](cape%20and%20island/figures/cape_and_islands_team_objectives_23_2017_2024/README.md) |
-| norfolk | [norfolk_eda_2017_2025](norfolk/norfolk_eda_2017_2025.ipynb) | [View 14 charts](norfolk/figures/norfolk_eda_2017_2025/README.md) |
-| norfolk | [norfolk_six_shared_questions_2017_2025](norfolk/norfolk_six_shared_questions_2017_2025.ipynb) | [View 12 charts](norfolk/figures/norfolk_six_shared_questions_2017_2025/README.md) |
+<h4 align="center">A template for the project readme file. </h4> <change to repo short description>
 
-## Run locally
+<p align="center">
+  <a href="#key-features">Key Features</a> •
+  <a href="#how-to-use">How To Use</a> •
+  <a href="#project-description">Project Description</a> •
+  <a href="#data-locations">Data Locations</a>
+</p>
 
-Open the workspace file in VS Code and select a Python environment with the dependencies in requirements.txt. Run each notebook from its county folder.
+## Key Features
+In this section you will be including a list of key features of your code/project.
 
-Place the project-approved source files next to the notebooks:
+You should also include a short description of what each part of your code does. (Detailed description in the readme of each directory, if applicable)
+* /path/to/directory - function and description
+  - Key notes
+* /path/to/script - function and description
+  - Key notes
+* Lorem Ipsum - Dolor Sit Amet
+  - Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+* Duis Aute Irure Dolor
+  - Excepteur sint occaecat
+* Excepteur Sint Occaecat
+  - Curabitur efficitur, nunc non ultricies gravida, felis purus posuere eros, sed faucibus sapien est nec quam. Nulla at nisl nisl.
+ 
+## How To Use
 
-| County | Source files |
-| --- | --- |
-| Berkshire | charges filed info.xlsx, disposed info.xlsx, bail info.xlsx |
-| Cape and Islands | charges filed.xlsx, charges disposed.xlsx, bail_data.xlsx |
-| Norfolk | NFK-Data-final-2017-2025 redacted.csv |
+To clone and run this application, you'll need <a href="https://git-scm.com" target="_blank">Git</a>
+From your command line:
 
-## Published results
+```bash
+# Clone this repository
+$ git clone [repo link]
 
-- [berkshire results](berkshire/published-results/README.md)
-- [cape and island results](cape%20and%20island/published-results/README.md)
-- [norfolk results](norfolk/published-results/README.md)
+# Further Instructions
+...
+```
+
+Create a new branch from dev, add changes on the new branch you just created.
+
+You will want to look into <a href="https://git-scm.com/docs/git-branch" target="_blank">git branch</a> and <a href="https://git-scm.com/docs/git-checkout" target="_blank">git checkout</a>
+
+```bash
+# Create and Checkout a new branch if it doesn't exist
+$ git checkout -b your-branch main
+...
+```
+
+Open a Pull Request to dev. Add your PM and TPM as reviewers. 
+
+At the end of the semester during project wrap up open a final Pull Request to main from dev branch.
+ 
+## Project Description
+
+In this section, you should include the project description, either from the client or spark.
+
+Please make sure it reflects what you see on the documents (project description) you recieved.
+
+* Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla facilisi. Donec vel nunc at libero ultrices tincidunt. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Mauris ut ligula nec risus posuere ultricies at et ligula. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+* Veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+
+## Data locations
+
+In this section, you should include the location of all of your datasets for the project (if applicable)
+
+<a href="dataset-documentation">Dataset Documentation</a>
+* Location 1: [location]
+  - [description]
+* Location 2: [location]
+  - [description]
