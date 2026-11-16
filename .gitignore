@@ -6,3 +6,4 @@ output/
 .venv/
 .ipynb_checkpoints/
 __pycache__/fa26/norfolk_eda/charts/*.png
+**/.streamlit/secrets.toml
