@@ -1,4 +1,9 @@
-"""Shared plotting style for the prosecutor explorer analyses.
+"""Shared plotting style and outcome buckets for the prosecutor explorer analyses.
+
+Outcome buckets follow the team's agreed criteria (Final Questions, Q3):
+Trial Conviction, Plea, CWOF (reported separately), Diversion, Acquittal,
+Dismissal, Other, Unknown. Each county maps its own disposition codes onto
+these in its notebook (see OUTCOME_ALIASES for common ones).
 
 counts passed to stacked_pct_bar must be RAW COUNTS (not percents):
 one row per bar (year, court, ...), one column per outcome.
@@ -10,28 +15,30 @@ import pandas as pd
 # One fixed color per outcome, used in every county and chart.
 # Don't reorder: the order keeps neighboring segments colorblind-safe.
 OUTCOME_COLORS = {
-    "Dismissed":      "#2a78d6",  # blue
-    "Nolle Prosequi": "#eb6834",  # orange
-    "CWOF":           "#1baf7a",  # aqua
-    "Guilty":         "#eda100",  # yellow (plea or finding)
-    "Not Guilty":     "#e87ba4",  # magenta
-    "Other Plea":     "#008300",  # green
-    "Other":          "#8a8984",  # gray
-    "Missing":        "#c9c8c2",  # light gray
+    "Trial Conviction": "#2a78d6",  # blue
+    "Plea":             "#eb6834",  # orange
+    "CWOF":             "#1baf7a",  # aqua
+    "Diversion":        "#eda100",  # yellow
+    "Acquittal":        "#e87ba4",  # magenta
+    "Dismissal":        "#008300",  # green
+    "Other":            "#8a8984",  # gray
+    "Unknown":          "#c9c8c2",  # light gray
 }
 OUTCOME_ORDER = list(OUTCOME_COLORS)
 
-# Map raw codes/spellings onto the shared labels. Add variants as you find them.
+# Case-level rule: a case gets its most severe outcome across all charges.
+SEVERITY = ["Trial Conviction", "Plea", "CWOF", "Diversion",
+            "Acquittal", "Dismissal", "Other", "Unknown"]
+
+# Common raw labels -> shared buckets. Counties add their own mappings in
+# their notebook. Nolle prosequi counts as Dismissal for shared questions.
 OUTCOME_ALIASES = {
-    "NOPR": "Nolle Prosequi",
-    "Nolle prosequi": "Nolle Prosequi",
-    "DISM": "Dismissed",
-    "Dismissal": "Dismissed",
+    "Dismissed": "Dismissal",
+    "DISM": "Dismissal",
+    "Nolle Prosequi": "Dismissal",
+    "NOPR": "Dismissal",
+    "Not Guilty": "Acquittal",
     "Continuance without a finding": "CWOF",
-    "Plea": "Guilty",
-    "Guilty plea": "Guilty",
-    "Not guilty": "Not Guilty",
-    "Unknown": "Missing",
 }
 
 SURFACE = "#fcfcfb"
@@ -41,10 +48,26 @@ GRID = "#e4e3df"
 
 
 def normalize_outcome(label):
+    """Map a raw label to a shared bucket. Missing -> Unknown, unmapped -> Other.
+    'Pending' passes through so open cases can be excluded."""
     if pd.isna(label):
-        return "Missing"
+        return "Unknown"
     label = OUTCOME_ALIASES.get(label, label)
+    if label == "Pending":
+        return "Pending"
     return label if label in OUTCOME_COLORS else "Other"
+
+
+def case_outcome(outcomes):
+    """Most severe outcome across a case's charges.
+    Returns 'Pending' if any charge is still open (exclude these from outcome charts)."""
+    s = set(outcomes)
+    if "Pending" in s:
+        return "Pending"
+    for o in SEVERITY:
+        if o in s:
+            return o
+    return "Other"
 
 
 def color_for(outcome):
@@ -87,8 +110,7 @@ def stacked_pct_bar(counts, unit="cases", title=None, xlabel=None, ax=None,
     """100% stacked bar with n above each bar.
 
     counts: DataFrame of raw counts, index = bars, columns = outcomes.
-    unit:   "cases" or "charges", shown in the y label so every chart
-            says what it counts.
+    unit:   "cases" or "charges", shown in the y label.
     """
     counts = counts.copy()
     counts.columns = [normalize_outcome(c) for c in counts.columns]
