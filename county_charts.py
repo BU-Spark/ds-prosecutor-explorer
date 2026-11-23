@@ -361,10 +361,13 @@ def plot_q8_heatmap(std, county, path, groups=("Black", "Hispanic"), ref="White"
 # ---------------------------------------------------------------------------
 # Run everything with standard file names
 # ---------------------------------------------------------------------------
-def standard_figures(std, vol, county, fig_dir, population=None, bail_std=None, prefix="",
+def standard_figures(std, vol, county, fig_dir, population=None, bail_std=None, prefix=None,
                      scope="", q8_supplementary=False):
     """Draws the full standard figure set. Returns the tables behind each chart.
-    population and bail_std are optional: Q2 / Q5 are skipped without them."""
+    population and bail_std are optional: Q2 / Q5 are skipped without them.
+    Files are named {county}_qX_... unless a different prefix is given."""
+    if prefix is None:
+        prefix = f"{county.lower()}_"
     p = lambda name: f"{fig_dir}/{prefix}{name}.png"
     out = {}
     out["q1_volume"] = plot_volume(vol, county, p("q1_volume"), scope)
