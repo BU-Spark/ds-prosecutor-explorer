@@ -26,6 +26,15 @@ OUTCOME_COLORS = {
 }
 OUTCOME_ORDER = list(OUTCOME_COLORS)
 
+# Q5: status at first arraignment. Same palette, fixed order.
+BAIL_COLORS = {
+    "PR":                "#1baf7a",  # aqua
+    "Cash Bail":         "#eb6834",  # orange
+    "Held Without Bail": "#2a78d6",  # blue
+    "Unknown":           "#c9c8c2",  # light gray
+}
+BAIL_ORDER = list(BAIL_COLORS)
+
 # Case-level rule: a case gets its most severe outcome across all charges.
 SEVERITY = ["Trial Conviction", "Plea", "CWOF", "Diversion",
             "Acquittal", "Dismissal", "Other", "Unknown"]
@@ -106,16 +115,20 @@ def set_style(font_size=14):
 
 
 def stacked_pct_bar(counts, unit="cases", title=None, xlabel=None, ax=None,
-                    min_label_pct=6, show_pct_labels=True, legend_title=None):
+                    min_label_pct=6, show_pct_labels=True, legend_title=None, colors=None):
     """100% stacked bar with n above each bar.
 
     counts: DataFrame of raw counts, index = bars, columns = outcomes.
     unit:   "cases" or "charges", shown in the y label.
+    colors: optional {category: color} for non-outcome categories (e.g. BAIL_COLORS).
+            Its order sets the stack order. Default: the shared outcome buckets.
     """
     counts = counts.copy()
-    counts.columns = [normalize_outcome(c) for c in counts.columns]
-    counts = counts.T.groupby(level=0).sum().T
-    cols = [c for c in OUTCOME_ORDER if c in counts.columns]
+    if colors is None:
+        counts.columns = [normalize_outcome(c) for c in counts.columns]
+        counts = counts.T.groupby(level=0).sum().T
+        colors = OUTCOME_COLORS
+    cols = [c for c in colors if c in counts.columns]
     counts = counts[cols]
 
     totals = counts.sum(axis=1)
@@ -128,7 +141,7 @@ def stacked_pct_bar(counts, unit="cases", title=None, xlabel=None, ax=None,
     bottom = pd.Series(0.0, index=pct.index)
     for outcome in cols:
         vals = pct[outcome]
-        ax.bar(x, vals, bottom=bottom, width=0.7, color=color_for(outcome),
+        ax.bar(x, vals, bottom=bottom, width=0.7, color=colors[outcome],
                label=outcome, edgecolor=SURFACE, linewidth=2)
         if show_pct_labels:
             for xi, v, b in zip(x, vals, bottom):

@@ -17,6 +17,14 @@ std columns (one row per case = docket x defendant):
 
 vol: Series indexed by filing year with the number of filed criminal cases
      (open cases included).
+
+bail_std columns (Q5; one row per case with a bail record, first arraignment):
+    case_key        unique case id (must match std / filed cases)
+    year            filing year of the case (int)
+    status          "PR", "Cash Bail", "Held Without Bail"; anything else -> "Unknown"
+    unable_to_post  True if cash bail was set and not posted, False if posted,
+                    NaN if the county can't tell
+    amount          cash bail amount set ($), NaN if none
 """
 
 import numpy as np
@@ -24,7 +32,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap, TwoSlopeNorm
 
-from viz_style import stacked_pct_bar, save_fig, OUTCOME_COLORS, TEXT_SECONDARY
+from viz_style import (stacked_pct_bar, save_fig, OUTCOME_COLORS, TEXT_SECONDARY,
+                       BAIL_COLORS, BAIL_ORDER)
 
 BLUE = OUTCOME_COLORS["Trial Conviction"]
 MIN_CELL = 30
@@ -142,6 +151,81 @@ def plot_outcomes(std, county, path, scope=""):
     save_fig(ax.figure, path)
     plt.show()
     return overall, (by_year.div(by_year.sum(axis=1), axis=0) * 100).round(1)
+
+
+# ---------------------------------------------------------------------------
+# Q5  Pretrial detention and bail
+# ---------------------------------------------------------------------------
+BAIL_STD_COLS = ["case_key", "year", "status", "unable_to_post", "amount"]
+
+
+def check_bail(bail_std):
+    missing = [c for c in BAIL_STD_COLS if c not in bail_std.columns]
+    assert not missing, f"bail_std is missing columns: {missing}"
+    out = bail_std.copy()
+    out["status"] = out["status"].where(out["status"].isin(BAIL_ORDER), "Unknown")
+    out["year"] = out["year"].astype(int)
+    return out
+
+
+def bail_table(bail_std, n_filed=None):
+    """Headline Q5 metrics plus status counts by filing year.
+    n_filed: number of filed cases, to report bail-record coverage."""
+    b = check_bail(bail_std)
+    s = b["status"].value_counts(normalize=True).reindex(BAIL_ORDER, fill_value=0) * 100
+    cash = b[b["status"] == "Cash Bail"]
+    known = cash["unable_to_post"].dropna().astype(float)
+    rows = {}
+    if n_filed:
+        rows["bail record coverage (% of filed cases)"] = len(b) / n_filed * 100
+    rows.update({
+        "% PR": s["PR"],
+        "% cash bail set": s["Cash Bail"],
+        "% held without bail": s["Held Without Bail"],
+        "% no status (Unknown)": s["Unknown"],
+        "% of cash-bail cases unable to post": known.mean() * 100 if len(known) else np.nan,
+        "median cash bail ($)": pd.to_numeric(cash["amount"], errors="coerce").median(),
+    })
+    by_year = (b.groupby("year")["status"].value_counts().unstack(fill_value=0)
+                .reindex(columns=BAIL_ORDER, fill_value=0))
+    return pd.Series(rows).round(1).to_frame("value"), by_year
+
+
+def plot_bail(bail_std, county, path, post_path=None, n_filed=None, scope=""):
+    """Q5 chart: status at first arraignment by filing year (100% stacked).
+    If post_path is given and the county records posting, also draws the
+    share of cash-bail cases unable to post, by year."""
+    table, by_year = bail_table(bail_std, n_filed)
+    ax = stacked_pct_bar(by_year, unit="cases with a bail record", xlabel="Filing year",
+                         colors=BAIL_COLORS,
+                         title=_title(county, "status at first arraignment", scope))
+    save_fig(ax.figure, path)
+    plt.show()
+
+    if post_path:
+        b = check_bail(bail_std)
+        cash = b[(b["status"] == "Cash Bail") & b["unable_to_post"].notna()]
+        g = cash.groupby("year")["unable_to_post"].agg(n="size", rate=lambda v: v.astype(float).mean() * 100)
+        g = g[g["n"] >= MIN_CELL]
+        if g.empty:
+            print("Q5: posting not recorded, so no unable-to-post chart.")
+        else:
+            fig, ax = plt.subplots()
+            ax.plot(g.index, g["rate"], marker="o", markersize=8, linewidth=2,
+                    color=BAIL_COLORS["Cash Bail"])
+            for x, v, n in zip(g.index, g["rate"], g["n"]):
+                ax.annotate(f"{v:.0f}%\n(n={int(n):,})", (x, v), xytext=(0, 8),
+                            textcoords="offset points", ha="center", fontsize=10)
+            ax.set_xticks(list(g.index))
+            ax.set_ylim(0, 110)
+            ax.set(xlabel="Filing year", ylabel="% of cash-bail cases",
+                   title=_title(county, "cash bail set but not posted", scope))
+            _events(ax)
+            save_fig(fig, post_path)
+            plt.show()
+
+    pct = (by_year.div(by_year.sum(axis=1), axis=0) * 100).round(1)
+    return table, pct
 
 
 # ---------------------------------------------------------------------------
@@ -277,15 +361,22 @@ def plot_q8_heatmap(std, county, path, groups=("Black", "Hispanic"), ref="White"
 # ---------------------------------------------------------------------------
 # Run everything with standard file names
 # ---------------------------------------------------------------------------
-def standard_figures(std, vol, county, fig_dir, population=None, prefix="", scope="",
-                     q8_supplementary=False):
-    """Draws the full standard figure set. Returns the tables behind each chart."""
+def standard_figures(std, vol, county, fig_dir, population=None, bail_std=None, prefix=None,
+                     scope="", q8_supplementary=False):
+    """Draws the full standard figure set. Returns the tables behind each chart.
+    population and bail_std are optional: Q2 / Q5 are skipped without them.
+    Files are named {county}_qX_... unless a different prefix is given."""
+    if prefix is None:
+        prefix = f"{county.lower()}_"
     p = lambda name: f"{fig_dir}/{prefix}{name}.png"
     out = {}
     out["q1_volume"] = plot_volume(vol, county, p("q1_volume"), scope)
     if population is not None:
         out["q2_per_capita"] = plot_per_capita(vol, population, county, p("q2_per_capita"), scope)
     out["q3_outcomes"] = plot_outcomes(std, county, p("q3_outcomes_by_year"), scope)
+    if bail_std is not None:
+        out["q5_bail"] = plot_bail(bail_std, county, p("q5_bail_status"),
+                                   post_path=p("q5_unable_to_post"), n_filed=int(vol.sum()), scope=scope)
     out["q6_offense"] = plot_time(std, "offense", "offense category", county, p("q6_time_by_offense"), scope=scope)
     out["q6_court"] = plot_time(std, "court", "court", county, p("q6_time_by_court"), scope=scope)
     out["q6_year"] = plot_time_by_year(std, county, p("q6_time_by_year"), scope)
