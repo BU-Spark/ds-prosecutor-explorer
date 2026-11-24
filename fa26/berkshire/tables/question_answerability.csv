@@ -1,0 +1,9 @@
+question,status,reason
+Q1,Partially answerable,Recorded initiation is a filing proxy.
+Q2,Partially answerable,The numerator inherits Q1’s initiation/ID-year limitation; population is annual and sourced.
+Q3,Partially answerable,"Observed disposed-case shares are available. Filing semantics, unresolved cases and unverified diversion limit a complete answer."
+Q4,Unavailable under shared rule,Sentence evidence exceeds 20% missing or fails an outcome/identity prerequisite. No incarceration/probation rate is released.
+Q5,Partially answerable,"First-event raw status composition is available. Arraignment, payment, posting and complete detention are not established."
+Q6,Partially answerable,Initiation approximates filing; substantive offense-category mapping is absent.
+Q7,Partially answerable,"Released: race dismissal only, sex dismissal only. Missingness and suppression remain material limitations."
+Q8,Full answer unavailable; limited supplementary comparison,Validated prior-record history and a shared substantive offense crosswalk are missing. No controlled racial-gap estimate is reported.

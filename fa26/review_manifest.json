@@ -1,0 +1,78 @@
+{
+  "review_date": "2026-11-23",
+  "scope": [
+    "berkshire",
+    "cape_and_islands"
+  ],
+  "counties": {
+    "berkshire": {
+      "notebook_sha256": "cf1ebb5a25a782f7dbe4824bb0ecd97a9aa312ce88bfc233251c46861ba9aa90",
+      "embedded_images": 12,
+      "executed_cells": 13,
+      "figures": 12,
+      "tables": 23,
+      "source_hashes_verified": true,
+      "validation": {
+        "county": "berkshire",
+        "checks": "passed",
+        "filed_units": 32262,
+        "disposed_units": 29788,
+        "tables": 23,
+        "figures": 12,
+        "source_sha256": {
+          "filed": "d546bd85a620df30a60edfddf769ea51e227b032b9646f950cabc21c78985516",
+          "disposed": "928f932b84ba90a6be508b6075b7ede98892dc117c491d36c87a875786c66fb8",
+          "bail": "8d8e2c666d4b49cfe0e17af415df6574ef9cd55a8572e93541523078bb9ed8fc"
+        }
+      }
+    },
+    "cape_and_islands": {
+      "notebook_sha256": "b9dd3b6f6406dcccba58744cbb410549f47c27af51892ca4f14ed8c46f1634ac",
+      "embedded_images": 12,
+      "executed_cells": 13,
+      "figures": 12,
+      "tables": 22,
+      "source_hashes_verified": true,
+      "validation": {
+        "county": "cape_and_islands",
+        "checks": "passed",
+        "filed_units": 42403,
+        "disposed_units": 36413,
+        "tables": 22,
+        "figures": 12,
+        "source_sha256": {
+          "filed": "e85f2d7dc9b9a32ad37e60e3994fe87c2902f9d0b1ea27f27f0de9f8304af5cb",
+          "disposed": "81af9592638a34cacf7a12513bc946c5e58c58e63c29710684645645a141da34",
+          "bail": "22bbdd01d94ecfb4b21d5c7a0832c72e631af742b17374a8b7e88f22a5ff1897"
+        }
+      }
+    }
+  },
+  "references": {
+    "viz_style.py": {
+      "sha256": "278ce1884b1fcd822a986d8e273488529733a0d5acbef49bad2c19d33d296079",
+      "url": "https://github.com/BU-Spark/ds-prosecutor-explorer/blob/parin-dev/viz_style.py"
+    },
+    "county_charts.py": {
+      "sha256": "66d1a88c9ebea924926ca7987a3b461bf9a1887dedc3b7197c48b2d3373a7ece",
+      "url": "https://github.com/BU-Spark/ds-prosecutor-explorer/blob/parin-dev/county_charts.py"
+    },
+    "county_analysis_template.ipynb": {
+      "sha256": "cf7ccce7cfc0ca8a2c4f9be2ec46b8c2eb54b3a1360d87aa2085e504990a41c6",
+      "url": "https://github.com/BU-Spark/ds-prosecutor-explorer/blob/parin-dev/county_analysis_template.ipynb"
+    }
+  },
+  "checks": [
+    "Both notebooks validated and fully executed with no error outputs",
+    "Embedded images decoded successfully",
+    "Case cohort and outcome counts reconciled",
+    "Outcome percentages sum to 100",
+    "Small-cell rates suppressed",
+    "Shared reference modules unchanged",
+    "Raw source workbook hashes unchanged"
+  ],
+  "not_checked": [
+    "Original ZIP comparison (original ZIP not present)"
+  ],
+  "text_hash_newlines": "LF-normalized; raw workbook hashes use original bytes"
+}

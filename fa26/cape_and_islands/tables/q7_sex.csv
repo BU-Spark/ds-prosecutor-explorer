@@ -1,0 +1,5 @@
+,n,events,missing_sentence,rate_pct,suppressed,ratio_vs_Male,missing_sentence_pct,metric,group
+0,9709,5899.0,9213.0,60.75805953239263,False,1.0266709709496558,,dismissal,Female
+1,26063,15424.0,23719.0,59.17968000613897,False,1.0,,dismissal,Male
+2,566,403.0,556.0,71.20141342756183,False,1.20313954756389,,dismissal,Missing
+3,75,63.0,73.0,84.0,False,1.4194061203319501,,dismissal,Unknown (U)

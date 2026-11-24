@@ -1,0 +1,28 @@
+,raw_disposition,outcome,charge_rows
+0,BO,Other,56
+1,CWF,CWOF,10592
+2,DEL,Other,426
+3,DIS,Dismissal,56055
+4,FILE,Other,54
+5,FWC,Other,37
+6,GBT,Trial Conviction,392
+7,GJT,Trial Conviction,818
+8,GJW,Trial Conviction,2
+9,GPL,Plea,11894
+10,NBL,Other,16
+11,ND,Other,7
+12,NGBT,Acquittal,1524
+13,NGI,Acquittal,65
+14,NGJT,Acquittal,1021
+15,NGJW,Acquittal,5
+16,NOP,Dismissal,6752
+17,NPC,Other,27
+18,NPDPH,Dismissal,10
+19,NR,Other,13639
+20,OBJ,Dismissal,9
+21,PTP,Other,2753
+22,RESP,Other,1527
+23,RRDPH,Other,2
+24,TAC,Other,219
+25,TYO,Other,2
+26,,Unknown,221

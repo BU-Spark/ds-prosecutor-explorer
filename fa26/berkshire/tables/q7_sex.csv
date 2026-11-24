@@ -1,0 +1,6 @@
+,n,events,missing_sentence,rate_pct,suppressed,ratio_vs_Male,missing_sentence_pct,metric,group
+0,7,,,,True,,,dismissal,Code N (unverified)
+1,8747,4564.0,7620.0,52.17788956213559,False,1.1570720438895343,,dismissal,Female
+2,20947,9446.0,16141.0,45.094762973218124,False,1.0,,dismissal,Male
+3,69,51.0,67.0,73.91304347826087,False,1.6390604718813577,,dismissal,Missing
+4,18,,,,True,,,dismissal,Unknown (U)

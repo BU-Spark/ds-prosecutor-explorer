@@ -1,0 +1,20 @@
+,extract,field,rows,missing_rows,pct_missing,years_available,status,note
+0,filed,docket,57989,171,0.29488351239028093,2017-2024,ok,
+1,filed,defendant_id,57989,0,0.0,2017-2024,ok,
+2,filed,filing_date,57989,0,0.0,2017-2024,ok,
+3,filed,charge_level,57989,0,0.0,2017-2024,ok,
+4,filed,offense_category,57989,57989,100.0,none,insufficient data,No validated substantive offense crosswalk; source class is supplementary.
+5,filed,court,57989,0,0.0,2017-2024,ok,
+6,filed,race,57989,1269,2.1883460656331373,2017-2024,ok,
+7,filed,sex,57989,135,0.23280277293969545,2017-2024,ok,
+8,disposed,docket,52959,157,0.29645574878679737,2017-2024,ok,
+9,disposed,defendant_id,52959,0,0.0,2017-2024,ok,
+10,disposed,filing_date,52959,0,0.0,2017-2024,ok,
+11,disposed,charge_level,52959,0,0.0,2017-2024,ok,
+12,disposed,offense_category,52959,52959,100.0,none,insufficient data,No validated substantive offense crosswalk; source class is supplementary.
+13,disposed,court,52959,0,0.0,2017-2024,ok,
+14,disposed,race,52959,1033,1.9505655318265074,2017-2024,ok,
+15,disposed,sex,52959,91,0.1718310391057233,2017-2024,ok,
+16,disposed,disposition_date,52959,0,0.0,2017-2024,ok,
+17,disposed,disposition,52959,0,0.0,2017-2024,ok,
+18,disposed,sentence_type,52959,26345,49.746029947695384,2017-2024,insufficient data,
