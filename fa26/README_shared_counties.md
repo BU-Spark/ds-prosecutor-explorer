@@ -1,7 +1,7 @@
 # Berkshire and Cape & Islands — shared-template review
 
 Open `berkshire/berkshire_analysis.ipynb` and `cape_and_islands/cape_and_islands_analysis.ipynb`.
-Both notebooks retain executed tables and embedded graphs. PNGs and aggregate CSVs are adjacent to each notebook.
+Both notebooks retain executed tables and embedded graphs. PNGs are in the repository-root `figures/berkshire/` and `figures/cape_and_islands/` folders. Aggregate CSVs remain beside each notebook under `tables/`.
 The original ZIP, original notebooks, and raw spreadsheets are unchanged. Norfolk is outside this revision.
 
 ## What changed
@@ -25,7 +25,7 @@ The supplied template includes legal-policy event markers. These revised charts 
 
 Use Python 3.13 and install `requirements_shared_counties.txt` in an isolated environment. Select that environment as the notebook kernel and Run All.
 
-By default, this package sits immediately inside the project folder alongside these source folders:
+Keep raw workbooks outside Git. Set `PROSECUTOR_DATA_ROOT` to a local source directory with this structure:
 
 ```
 project/
@@ -37,20 +37,19 @@ project/
     charges filed.xlsx
     charges disposed.xlsx
     bail_data.xlsx
-  fa26/
 ```
 
-For another source location, set `PROSECUTOR_DATA_ROOT` to the parent of the two source folders before launching Jupyter or VS Code. The setup cell discovers the package without requiring a Git checkout. Raw data are not included in this review package.
+For another source location, set `PROSECUTOR_DATA_ROOT` to the parent of the two source folders before launching Jupyter or VS Code. The setup cell discovers `fa26` and imports the shared plotting files from the repository root. Raw data are not included in this review package.
 
-To execute and validate both notebooks from the package root:
+To execute and validate both notebooks from the repository root:
 
 ```
-python execute_notebooks.py
+python fa26/execute_notebooks.py
 ```
 
-The runner creates a temporary project-local kernel configuration under `.execution/`, uses the current Python environment, stops on the first error, and requires embedded PNG outputs. That configuration is excluded from the review ZIP and Git.
+The runner creates a temporary project-local kernel configuration under `fa26/.execution/`, uses the current Python environment, stops on the first error, and requires embedded PNG outputs. That configuration is excluded from the review ZIP and Git.
 
-Run `python verify_release.py` afterward to validate the saved outputs and rebuild the ZIP. It checks raw-source hashes when the original workbooks are available and explicitly lists any source-preservation checks it cannot perform on another computer.
+Run `python fa26/verify_release.py` afterward to validate the saved outputs and rebuild the ZIP. It checks raw-source hashes when the original workbooks are available and explicitly lists any source-preservation checks it cannot perform on another computer.
 
 ## Provenance and review
 
@@ -68,3 +67,7 @@ The remaining client questions appear at the end of both notebooks. Executing wi
 These reviewed notebooks replace the previous Berkshire and Cape folders directly under `fa26` on `pavan`. Norfolk and the other counties are unchanged. Raw workbooks remain outside Git. Set `PROSECUTOR_DATA_ROOT` to the local folder containing `berkshire` and `cape and island` before rerunning.
 
 Text checksums normalize Windows/Unix line endings; raw workbook checksums preserve the original bytes.
+
+## Repository front page
+
+The shared template, `county_charts.py`, and `viz_style.py` live at the repository root, together with `figures/`. County notebooks, adapters, requirements, audit tables and verification scripts remain in `fa26/`. Only paths and documentation changed in this organization update; numerical results and saved graph contents were preserved.

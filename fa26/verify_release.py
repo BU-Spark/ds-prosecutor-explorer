@@ -9,6 +9,7 @@ import nbformat
 import pandas as pd
 
 ROOT=Path(__file__).resolve().parent
+REPO_ROOT=ROOT.parent
 REFERENCE_SHA256={
     'viz_style.py':'278ce1884b1fcd822a986d8e273488529733a0d5acbef49bad2c19d33d296079',
     'county_charts.py':'66d1a88c9ebea924926ca7987a3b461bf9a1887dedc3b7197c48b2d3373a7ece',
@@ -22,10 +23,10 @@ def sha(path):
     return hashlib.sha256(data).hexdigest()
 
 def verify():
-    manifest={'review_date':'2026-11-23','scope':['berkshire','cape_and_islands'],'counties':{},'references':{},'checks':[],'not_checked':[],'text_hash_newlines':'LF-normalized; raw workbook hashes use original bytes'}
+    manifest={'review_date':'2026-11-23','organization_date':'2026-11-26','scope':['berkshire','cape_and_islands'],'counties':{},'references':{},'checks':[],'not_checked':[],'text_hash_newlines':'LF-normalized; raw workbook hashes use original bytes'}
     for name in ['viz_style.py','county_charts.py','county_analysis_template.ipynb']:
-        assert sha(ROOT/name)==REFERENCE_SHA256[name]
-        manifest['references'][name]=dict(sha256=sha(ROOT/name),url='https://github.com/BU-Spark/ds-prosecutor-explorer/blob/parin-dev/'+name)
+        assert sha(REPO_ROOT/name)==REFERENCE_SHA256[name]
+        manifest['references'][name]=dict(sha256=sha(REPO_ROOT/name),url='https://github.com/BU-Spark/ds-prosecutor-explorer/blob/parin-dev/'+name)
     for slug in manifest['scope']:
         folder=ROOT/slug
         path=folder/(slug+'_analysis.ipynb')
@@ -70,7 +71,7 @@ def verify():
         else:
             manifest['not_checked'].append(slug+': raw source hashes (source files not present)')
         manifest['counties'][slug]=dict(notebook_sha256=sha(path),embedded_images=len(pngs),executed_cells=len(codes),
-            figures=len(list((folder/'figures').glob('*.png'))),tables=len(list(t.glob('*.csv'))),source_hashes_verified=sources_present,validation=validation)
+            figures=len(list((REPO_ROOT/'figures'/slug).glob('*.png'))),tables=len(list(t.glob('*.csv'))),source_hashes_verified=sources_present,validation=validation)
     original_zip=ROOT.parent/'county_notebooks_for_github.zip'
     if original_zip.exists():
         with zipfile.ZipFile(original_zip) as original:
@@ -86,14 +87,16 @@ def verify():
     if all(c['source_hashes_verified'] for c in manifest['counties'].values()):
         manifest['checks'].append('Raw source workbook hashes unchanged')
     (ROOT/'review_manifest.json').write_text(json.dumps(manifest,indent=2),encoding='utf8')
-    allowed_root={'README_shared_counties.md','requirements_shared_counties.txt','.gitignore','.gitattributes','annual_population.csv','viz_style.py','county_charts.py','county_analysis_template.ipynb',
+    allowed_root={'README_shared_counties.md','requirements_shared_counties.txt','.gitignore','.gitattributes','annual_population.csv',
         'county_adapter.py','county_review_charts.py','berkshire_source.py','cape_and_islands_source.py','build_notebooks.py','execute_notebooks.py','verify_release.py','review_manifest.json'}
     files=[ROOT/name for name in sorted(allowed_root)]
+    files += [REPO_ROOT/name for name in ['county_analysis_template.ipynb','county_charts.py','viz_style.py','README.md','.gitattributes']]
     for slug in manifest['scope']:
-        files += [p for p in (ROOT/slug).rglob('*') if p.is_file() and p.suffix in ['.ipynb','.png','.csv','.json']]
+        files += [p for p in (ROOT/slug).rglob('*') if p.is_file() and p.suffix in ['.ipynb','.csv','.json']]
+        files += list((REPO_ROOT/'figures'/slug).glob('*.png'))
     out=ROOT/'county_notebooks_for_github_review.zip'
     with zipfile.ZipFile(out,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=6) as z:
-        for p in files:z.write(p,Path(ROOT.name)/p.relative_to(ROOT))
+        for p in files:z.write(p,p.relative_to(REPO_ROOT))
     with zipfile.ZipFile(out) as z:
         assert z.testzip() is None
         assert len(z.namelist())==len(files)

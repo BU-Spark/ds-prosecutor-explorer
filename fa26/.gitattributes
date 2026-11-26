@@ -1,5 +1,2 @@
-county_charts.py text eol=lf
-viz_style.py text eol=lf
-county_analysis_template.ipynb text eol=lf
 berkshire/berkshire_analysis.ipynb text eol=lf
 cape_and_islands/cape_and_islands_analysis.ipynb text eol=lf

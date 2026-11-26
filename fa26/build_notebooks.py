@@ -32,6 +32,7 @@ def build(slug,name,preserve_outputs=False):
 
     **County-specific date limitation:** {'Initiated Dt is an initiation date; its equivalence to court filing needs client confirmation.' if slug=='berkshire' else 'There is no filing date. Case-ID prefix years are unverified cohort proxies; their charts are supplementary, not confirmed filing trends.'}
     ''')
+    cells[-1]['source'] += '\n**Figure location:** `figures/'+slug+'/` at the repository root. Tables remain beside this notebook.\n'
     md('## Setup\nRun all cells in order. Set the `PROSECUTOR_DATA_ROOT` environment variable if the original spreadsheets are elsewhere. Raw files are read only.')
     code(f'''
     from pathlib import Path
@@ -42,10 +43,12 @@ def build(slug,name,preserve_outputs=False):
     from IPython.display import display, Markdown
 
     ROOT = next((p for base in (Path.cwd(), *Path.cwd().parents)
-                 for p in (base, base / 'county_notebooks_for_github_updated')
+                 for p in (base, base / 'fa26')
                  if (p / 'county_adapter.py').is_file()), None)
     if ROOT is None:
         raise FileNotFoundError('Open this notebook from its county folder or the review package root.')
+    REPO_ROOT=ROOT.parent
+    sys.path.insert(0, str(REPO_ROOT))
     sys.path.insert(0, str(ROOT))
     from viz_style import set_style, OUTCOME_COLORS, BAIL_COLORS, stacked_pct_bar
     from county_charts import bail_table, MIN_CELL
@@ -55,8 +58,8 @@ def build(slug,name,preserve_outputs=False):
 
     SLUG={slug!r}; COUNTY={name!r}; BERK=SLUG=='berkshire'
     COUNTY_DIR=ROOT/SLUG
-    FIG_DIR=COUNTY_DIR/'figures'; TABLE_DIR=COUNTY_DIR/'tables'
-    FIG_DIR.mkdir(exist_ok=True); TABLE_DIR.mkdir(exist_ok=True)
+    FIG_DIR=REPO_ROOT/'figures'/SLUG; TABLE_DIR=COUNTY_DIR/'tables'
+    FIG_DIR.mkdir(parents=True,exist_ok=True); TABLE_DIR.mkdir(exist_ok=True)
     DATA_ROOT=Path(os.environ.get('PROSECUTOR_DATA_ROOT', str(ROOT.parent)))
     YEARS=range(2017,2025)
     YEAR_LABEL='Recorded initiation year (filing proxy)' if BERK else 'Unverified case-ID prefix year'

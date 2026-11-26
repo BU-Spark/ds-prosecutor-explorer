@@ -1,12 +1,13 @@
 {
   "review_date": "2026-11-23",
+  "organization_date": "2026-11-26",
   "scope": [
     "berkshire",
     "cape_and_islands"
   ],
   "counties": {
     "berkshire": {
-      "notebook_sha256": "cf1ebb5a25a782f7dbe4824bb0ecd97a9aa312ce88bfc233251c46861ba9aa90",
+      "notebook_sha256": "56c4e6c1fcc8782c3ca110eac0024932bb7556454343b09a0a9287786409db40",
       "embedded_images": 12,
       "executed_cells": 13,
       "figures": 12,
@@ -27,7 +28,7 @@
       }
     },
     "cape_and_islands": {
-      "notebook_sha256": "b9dd3b6f6406dcccba58744cbb410549f47c27af51892ca4f14ed8c46f1634ac",
+      "notebook_sha256": "95d1082dd233cfc7ae5c35296f953ec8a265f3091cbbb33e166e55f38fcd8c39",
       "embedded_images": 12,
       "executed_cells": 13,
       "figures": 12,
