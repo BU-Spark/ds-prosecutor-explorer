@@ -12,8 +12,10 @@ import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
-DEFAULT_MODEL = "claude-sonnet-5-5"
-MODELS = ["claude-sonnet-5-5", "claude-opus-5-5", "claude-haiku-5-5"]
+# OpenRouter model ids. Development: low-cost models only.
+DEFAULT_MODEL = "anthropic/claude-haiku-5.5"
+MODELS = ["anthropic/claude-haiku-5.5", "anthropic/claude-haiku-4.5"]
+OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
 MAX_TOOL_STEPS = 6
 HISTORY_TURNS = 8   # earlier user/assistant turns sent back to Claude for follow-up questions
 
@@ -215,7 +217,8 @@ Rules:
 5. If a denominator is under 30, warn that the percentage rests on very few records.
 6. Explain crime-type and agency codes with the glossary. It lists the most common charges recorded under each code in this data; the official codebook meaning of CHAB, ELAB and HACR is unconfirmed, so say "appears to cover".
 7. Describe what the data shows. Do not speculate about causes, judge courts or people, or recommend policy.
-8. Style: plain English, 2-5 short sentences or a short bullet list. Bold the key number with **...**. No headings or tables. Do not mention chart ids, tools or JSON."""
+8. Style: start with ONE sentence in bold (**...**) that states the main finding with its key number. Then 1-4 short plain-English sentences or a short bullet list with the denominator and caveat. No headings or tables. Do not mention chart ids, tools or JSON.
+9. Finish with a last line in exactly this form: "Follow-ups: <question> | <question> | <question>" giving 2-3 short follow-up questions (under 12 words each) that the charts in the catalog can answer. Include this line even when you decline a question."""
 
 
 def catalog_text(store: Store) -> str:
@@ -300,6 +303,69 @@ def ask_claude(client, store: Store, history: list[dict], user_text: str,
             results.append({"type": "tool_result", "tool_use_id": u["id"], "content": out})
         messages.append({"role": "user", "content": results})
     return Answer("I couldn't finish looking that up. Please try a narrower question.", charts, log)
+
+
+def _openai_tools() -> list[dict]:
+    """TOOLS in the OpenAI / OpenRouter function format."""
+    return [{"type": "function", "function": {"name": t["name"], "description": t["description"],
+                                              "parameters": t["input_schema"]}} for t in TOOLS]
+
+
+def _text_of(content) -> str:
+    """Message content can be a string or a list of parts."""
+    if isinstance(content, list):
+        return "".join(p.get("text", "") for p in content if isinstance(p, dict))
+    return content or ""
+
+
+def ask_openrouter(api_key: str, store: Store, history: list[dict], user_text: str,
+                   model: str = DEFAULT_MODEL, max_tokens: int = 2000, post=None) -> Answer:
+    """Same tool loop as ask_claude, through OpenRouter's OpenAI-compatible API."""
+    import json as _json
+    import requests
+    post = post or requests.post
+    messages = [{"role": "system", "content": system_prompt(store)}] + build_messages(history, user_text)
+    headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json",
+               "X-Title": "Norfolk prosecution chatbot"}
+    charts, log, said = [], [], []
+
+    def call(extra=None):
+        body = {"model": model, "max_tokens": max_tokens, "messages": messages, "tools": _openai_tools()}
+        body.update(extra or {})
+        r = post(OPENROUTER_URL, headers=headers, timeout=90, json=body)
+        if r.status_code != 200:
+            raise RuntimeError(f"OpenRouter {r.status_code}: {r.text[:300]}")
+        return r.json()["choices"][0]["message"]
+
+    for _ in range(MAX_TOOL_STEPS):
+        msg = call()
+        text = _text_of(msg.get("content")).strip()
+        calls = msg.get("tool_calls") or []
+        if text:
+            said.append(text)          # some models write the answer next to their tool calls
+        if not calls:
+            break
+        messages.append({"role": "assistant", "content": text, "tool_calls": calls})
+        for c in calls:
+            name = c["function"]["name"]
+            try:
+                args = _json.loads(c["function"].get("arguments") or "{}")
+            except ValueError:
+                args = {}
+            out = run_tool(store, name, args, charts)
+            log.append({"tool": name, "input": args, "output": out[:400]})
+            messages.append({"role": "tool", "tool_call_id": c["id"], "content": out})
+    else:
+        if not said:
+            return Answer("I couldn't finish looking that up. Please try a narrower question.", charts, log)
+
+    if not said:
+        # Model stopped without writing anything: ask once more for the written answer, no more tools.
+        messages.append({"role": "user", "content": "Now write your answer to my question using the numbers you looked up."})
+        text = _text_of(call({"tool_choice": "none"}).get("content")).strip()
+        if text:
+            said.append(text)
+    return Answer("\n\n".join(said) or "(No answer returned.)", charts, log)
 
 
 # ----------------------------------------------------------------------------- offline mode
