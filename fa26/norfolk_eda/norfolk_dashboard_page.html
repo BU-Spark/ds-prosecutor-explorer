@@ -1,0 +1,495 @@
+<meta name="dash-one-writer">
+<style>
+.nf { --nf-max: 1080px; display: flex; flex-direction: column; gap: var(--cds-gap-xl); max-width: var(--nf-max); }
+.nf-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-sm); text-wrap: balance; }
+.nf-lede { font-size: var(--cds-font-size-body); color: var(--color-fg); max-width: 70ch; margin: 0; line-height: 1.55; }
+.nf-meta { color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); margin: var(--cds-gap-sm) 0 0; max-width: 80ch; line-height: 1.5; }
+.nf-group { display: flex; flex-direction: column; gap: var(--cds-gap-lg); }
+.nf-group > h2 { font-size: var(--cds-font-size-caption); text-transform: uppercase; letter-spacing: .08em; color: var(--color-fg-muted); font-weight: var(--cds-font-weight-medium); margin: 0; padding-bottom: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); }
+.nf-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); gap: var(--cds-gap-lg); }
+.nf-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+.nf-card.wide { grid-column: 1 / -1; }
+.nf-q { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); font-variant-numeric: tabular-nums; margin: 0; }
+.nf-card h3 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+.nf-take { margin: 0; line-height: 1.5; max-width: 72ch; }
+.nf-take b { font-variant-numeric: tabular-nums; }
+.nf-note { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); line-height: 1.45; max-width: 80ch; }
+.nf-chart { position: relative; width: 100%; }
+.nf-chart:empty { min-height: 240px; }
+.nf-chart.tall:empty { min-height: 380px; }
+.nf-chart svg { display: block; overflow: visible; }
+.nf-chart text { fill: var(--cds-text-secondary); font-size: var(--cds-font-size-caption); font-family: var(--font-anthropic-sans); }
+.nf-chart .lbl-strong { fill: var(--color-fg); }
+.nf-chart .in-bar { fill: #fff; font-variant-numeric: tabular-nums; }
+.nf-chart .grid line { stroke: var(--cds-chart-grid); }
+.nf-chart .axis path, .nf-chart .axis line { stroke: var(--cds-chart-axis); }
+.nf-chart .ref { stroke: var(--cds-chart-reference); stroke-dasharray: 3 3; }
+.nf-chart .fail { fill: var(--color-fg-muted); }
+.nf-legend { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs) var(--cds-gap-md); font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; padding: 0; list-style: none; }
+.nf-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.nf-legend i { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.nf-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); box-shadow: var(--cds-shadow-popover); border-radius: var(--cds-radius); padding: 6px 9px; font-size: var(--cds-font-size-caption); color: var(--color-fg); white-space: nowrap; z-index: 5; font-variant-numeric: tabular-nums; }
+.nf-tip div + div { color: var(--cds-text-secondary); }
+.nf-gap { border: 1px dashed var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+.nf-gap h3 { font-size: var(--cds-font-size-body); margin: 0; font-weight: var(--cds-font-weight-medium); }
+.nf-pill { display: inline-block; font-size: var(--cds-font-size-caption); padding: 1px 8px; border-radius: 999px; border: 1px solid var(--color-border-line); color: var(--color-fg-muted); width: fit-content; }
+.nf-pill.warn { color: var(--color-warn); border-color: currentColor; }
+.nf-pill.bad { color: var(--color-bad); border-color: currentColor; }
+.nf-pill.ok { color: var(--color-ok); border-color: currentColor; }
+.nf details { border-top: 1px solid var(--color-border-line); padding-top: var(--cds-gap-md); }
+.nf details summary { cursor: pointer; font-weight: var(--cds-font-weight-medium); }
+.nf details ul { line-height: 1.55; max-width: 80ch; padding-left: 1.2em; }
+.nf-scroll { overflow-x: auto; }
+[data-dash-source-state=refreshing] { opacity: .5; }
+</style>
+
+<div class="nf">
+  <header class="nf-head" id="top">
+    <h1>Norfolk Prosecutor Data, 2017–2024</h1>
+    <p class="nf-lede">Of <b data-draw="num" data-source="outcomes" data-field="cases" data-where="period=2017%E2%80%932024" data-fmt="int">—</b> disposed non-motor-vehicle cases filed 2017–2024, <b data-draw="num" data-source="outcomes" data-field="dismissal" data-where="period=2017%E2%80%932024" data-fmt="pct">—</b> ended in dismissal and <b data-draw="num" data-source="outcomes" data-field="plea_guilty" data-where="period=2017%E2%80%932024" data-fmt="pct">—</b> in a plea or guilty finding. Filings in 2024 were <b data-draw="num" data-source="volume" data-field="pct_vs_2017" data-where="year=2024" data-fmt="signed">—</b> versus 2017.</p>
+    <p class="nf-meta">One row per case, classified by its most serious charge. Cases whose most serious charge is a motor vehicle or OUI offense are left out. Race and sex exist only for cases filed from 2017 on. Each chart answers one of the team's final questions; questions the data cannot answer are listed with the reason.</p>
+  </header>
+
+  <section class="nf-group" id="volume">
+    <h2>Volume</h2>
+    <div class="nf-grid">
+      <article class="nf-card" id="q1">
+        <p class="nf-q">Q1 · Volume and trend</p>
+        <h3>How many cases were filed each year?</h3>
+        <p class="nf-take"><b data-draw="num" data-source="volume" data-field="cases" data-where="year=2024" data-fmt="int">—</b> cases were filed in 2024, <b data-draw="num" data-source="volume" data-field="pct_vs_2017" data-where="year=2024" data-fmt="signed">—</b> versus 2017. The biggest drop was 2020, at <b data-draw="num" data-source="volume" data-field="pct_change_yoy" data-where="year=2020" data-fmt="signed">—</b> year over year.</p>
+        <div class="nf-chart" id="q1-chart" data-draw="q1" data-source="volume"></div>
+        <p class="nf-note">Shaded years are the team window. 2005–2016 come from an older historical extract; 2017 on from the 2026 records request, so the step at 2017 may partly reflect the change of source.</p>
+      </article>
+      <article class="nf-card" id="q2">
+        <p class="nf-q">Q2 · Per-capita rate</p>
+        <h3>How many cases are filed per 10,000 residents?</h3>
+        <p class="nf-take"><b data-draw="num" data-source="volume" data-field="per_10k" data-where="year=2024" data-fmt="dec1">—</b> cases per 10,000 residents in 2024, down from <b data-draw="num" data-source="volume" data-field="per_10k" data-where="year=2017" data-fmt="dec1">—</b> in 2017.</p>
+        <div class="nf-chart" id="q2-chart" data-draw="q2" data-source="volume"></div>
+        <p class="nf-note">Population: Census Bureau annual estimates (July 1) for Norfolk County, via FRED series MANORF1POP. The 2020 jump in population reflects the 2020 Census re-base.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="nf-group" id="outcomes">
+    <h2>Outcomes and sentencing</h2>
+    <div class="nf-grid">
+      <article class="nf-card wide" id="q3">
+        <p class="nf-q">Q3 · Case outcomes</p>
+        <h3>How do cases end, overall and by year?</h3>
+        <p class="nf-take">Dismissal is the most common outcome every year. CWOF (continued without a finding) is shown on its own: <b data-draw="num" data-source="outcomes" data-field="cwof" data-where="period=2017%E2%80%932024" data-fmt="pct">—</b> of cases overall.</p>
+        <ul class="nf-legend" data-draw="legend" data-set="outcomes6"></ul>
+        <div class="nf-chart tall" id="q3-chart" data-draw="q3" data-source="outcomes"></div>
+        <p class="nf-note">Share of disposed cases; each case counts once at its most severe outcome. Still-open cases are left out, which grows to <b data-draw="num" data-source="outcomes" data-field="pending_pct" data-where="period=2024" data-fmt="pct">—</b> of 2024 filings, so recent years lean toward fast-resolving cases.</p>
+      </article>
+      <article class="nf-card" id="q4">
+        <p class="nf-q">Q4 · Sentencing</p>
+        <h3>What sentence do convicted cases get?</h3>
+        <p class="nf-take"><b data-draw="num" data-source="sentences" data-field="pct" data-where="sentence=Incarceration" data-fmt="pct">—</b> of convicted cases got incarceration. The sentence type is missing for <b data-draw="num" data-source="sentences" data-field="pct" data-where="sentence=Missing" data-fmt="pct">—</b>.</p>
+        <div class="nf-chart" id="q4-chart" data-draw="q4" data-source="sentences"></div>
+        <p class="nf-note">Convicted = plea, guilty finding or trial conviction (CWOF excluded). Most severe sentence on the case. Sentence codes are undefined in the data; "Suspended / split" (SSS, SPS) and "Filed / other" are our reading of the abbreviations.</p>
+      </article>
+      <article class="nf-card" id="q4b">
+        <p class="nf-q">Q4 · Sentencing by offense</p>
+        <h3>How does the sentence mix differ by offense?</h3>
+        <ul class="nf-legend" data-draw="legend" data-set="sentences"></ul>
+        <div class="nf-chart tall" id="q4b-chart" data-draw="q4b" data-source="sentence_by_offense"></div>
+        <p class="nf-note">Convicted cases with a known sentence, ten largest offense groups.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="nf-group" id="timing">
+    <h2>Pretrial and timing</h2>
+    <div class="nf-grid">
+      <div class="nf-gap" id="q5">
+        <p class="nf-q">Q5 · Pretrial detention and bail</p>
+        <h3>Not answerable with this data</h3>
+        <span class="nf-pill bad">No data</span>
+        <p class="nf-note">Norfolk denied the bail part of the records request, so there are no bail amounts, release types or custody records.</p>
+      </div>
+      <article class="nf-card wide" id="q6">
+        <p class="nf-q">Q6 · Time to disposition</p>
+        <h3>How long do cases take, by offense and court?</h3>
+        <p class="nf-take">The median case closed in <b data-draw="num" data-source="time" data-field="median_days" data-where="group=All%20cases" data-fmt="int">—</b> days. Superior Court cases take a median of <b data-draw="num" data-source="time" data-field="median_days" data-where="group=Superior%20Court" data-fmt="int">—</b>.</p>
+        <ul class="nf-legend"><li><i style="background: var(--cds-chart-muted)"></i>Middle half of cases (25th–75th percentile)</li><li><i style="background: var(--color-fg); border-radius: 50%"></i>Median</li></ul>
+        <div class="nf-grid">
+          <div class="nf-chart tall" id="q6-offense" data-draw="q6" data-kind="Offense" data-source="time"></div>
+          <div class="nf-chart" id="q6-court" data-draw="q6" data-kind="Court" data-source="time"></div>
+        </div>
+        <p class="nf-note">Axis in days. Days from filing to the last disposition on the case. Open cases, negative intervals and flagged date errors are excluded; groups under 30 cases are hidden.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="nf-group" id="equity">
+    <h2>Equity</h2>
+    <div class="nf-grid">
+      <article class="nf-card" id="q7">
+        <p class="nf-q">Q7 · Disparities by race and sex</p>
+        <h3>Dismissal and incarceration rates by group</h3>
+        <p class="nf-take">Hispanic defendants who were convicted were incarcerated <b data-draw="num" data-source="disparity" data-field="incarceration_ratio" data-where="group=Hispanic" data-fmt="ratio">—</b> as often as White defendants; women <b data-draw="num" data-source="disparity" data-field="incarceration_ratio" data-where="group=Female" data-fmt="ratio">—</b> as often as men.</p>
+        <ul class="nf-legend"><li><i data-draw="swatch" data-i="0"></i>Dismissed (% of disposed cases)</li><li><i data-draw="swatch" data-i="1"></i>Incarcerated (% of convicted cases)</li></ul>
+        <div class="nf-chart tall" id="q7-chart" data-draw="q7" data-source="disparity"></div>
+        <p class="nf-note"><span class="nf-pill warn">Caution</span> Race is unknown or missing for about 30% of cases, above the team's 20% cutoff, and those cases are kept as their own group. Ratio is versus White (race) and Male (sex). Rates on fewer than 30 cases are hidden.</p>
+      </article>
+      <article class="nf-card" id="q8">
+        <p class="nf-q">Q8 · Disparities with controls</p>
+        <h3>Incarceration within offense and prior record</h3>
+        <ul class="nf-legend"><li><i data-draw="swatch" data-i="0"></i>White</li><li><i data-draw="swatch" data-i="1"></i>Black</li><li><i data-draw="swatch" data-i="2"></i>Hispanic</li></ul>
+        <div class="nf-chart tall" id="q8-chart" data-draw="q8" data-source="controls"></div>
+        <p class="nf-note">% of convicted cases incarcerated, within the same offense group and prior-record level. Prior record = any case for the same defendant filed in the previous 5 years (data reaches back to 2005, so every 2017–2024 case has a full lookback). Cells under 30 cases are hidden.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="nf-group" id="norfolk">
+    <h2>Norfolk-specific questions</h2>
+    <div class="nf-grid">
+      <article class="nf-card wide" id="n1">
+        <p class="nf-q">N1 · Domestic violence, sexual assault and child abuse dispositions, 2015–2024</p>
+        <h3>How have these dispositions changed over the last decade?</h3>
+        <p class="nf-take">Dismissal of domestic violence cases rose from <b data-draw="num" data-source="special_outcomes" data-field="dismissal" data-where="crime=Domestic%20violence&amp;year=2015" data-fmt="pct">—</b> in 2015 to <b data-draw="num" data-source="special_outcomes" data-field="dismissal" data-where="crime=Domestic%20violence&amp;year=2024" data-fmt="pct">—</b> in 2024.</p>
+        <ul class="nf-legend"><li><i data-draw="swatch" data-i="0"></i>Dismissal</li><li><i data-draw="swatch" data-i="1"></i>Plea / guilty</li><li><i data-draw="swatch" data-i="2"></i>CWOF</li><li><i data-draw="swatch" data-i="4"></i>Trial conviction</li></ul>
+        <div class="nf-grid">
+          <div class="nf-chart" id="n1-dv" data-draw="n1" data-crime="Domestic violence" data-source="special_outcomes"></div>
+          <div class="nf-chart" id="n1-sa" data-draw="n1" data-crime="Sexual assault" data-source="special_outcomes"></div>
+          <div class="nf-chart" id="n1-child" data-draw="n1" data-crime="Child abuse" data-source="special_outcomes"></div>
+        </div>
+        <p class="nf-note">Domestic violence and sexual assault use the office's own case-type flags (DV, SA). Child abuse uses child-victim charges (e.g. c.265 §13J, §13L, §13B, §22A, §23, c.272 §29A–C) and overlaps with sexual assault. Sexual assault and child abuse have about 100–200 cases a year, so year-to-year swings are noisy.</p>
+      </article>
+      <article class="nf-card" id="n2">
+        <p class="nf-q">N2 · District courts</p>
+        <h3>How do outcomes vary across the five district courts?</h3>
+        <ul class="nf-legend" data-draw="legend" data-set="outcomes6"></ul>
+        <div class="nf-chart" id="n2-chart" data-draw="n2" data-source="courts"></div>
+        <p class="nf-note">Disposed cases filed 2017–2024. Court is missing for about 19% of cases, which are left out here.</p>
+      </article>
+      <article class="nf-card" id="n5">
+        <p class="nf-q">N5 · Charging trends, 2015–2024</p>
+        <h3>Elder abuse and sexual assault filings are rising</h3>
+        <p class="nf-take">Elder abuse cases went from <b data-draw="num" data-source="charging_trends" data-field="elder_abuse" data-where="year=2015" data-fmt="int">—</b> in 2015 to <b data-draw="num" data-source="charging_trends" data-field="elder_abuse" data-where="year=2024" data-fmt="int">—</b> in 2024.</p>
+        <ul class="nf-legend"><li><i data-draw="swatch" data-i="0"></i>Domestic violence</li><li><i data-draw="swatch" data-i="1"></i>Sexual assault</li><li><i data-draw="swatch" data-i="2"></i>Child abuse</li><li><i data-draw="swatch" data-i="3"></i>Elder abuse</li><li><i data-draw="swatch" data-i="4"></i>Hate crimes</li></ul>
+        <div class="nf-chart" id="n5-chart" data-draw="n5" data-source="charging_trends"></div>
+        <p class="nf-note">Cases filed per year, log scale. Elder abuse = c.265 §13K/§13H and larceny from a person 60+ or disabled. Hate crimes = c.265 §37, §39 and c.12 §11J; under 20 a year.</p>
+      </article>
+      <article class="nf-card wide" id="n3">
+        <p class="nf-q">N3 · Crime type by municipality</p>
+        <h3>What share of each town's cases is each type of crime?</h3>
+        <div class="nf-scroll"><div class="nf-chart tall" id="n3-chart" data-draw="n3" data-source="towns"></div></div>
+        <p class="nf-note">Filing police department, 15 largest; % of that department's cases filed 2017–2024 (rows add to 100%). State Police barracks cover highways, not one town.</p>
+      </article>
+      <div class="nf-gap" id="n4">
+        <p class="nf-q">N4 · Victims by race/ethnicity</p>
+        <h3>Not answerable with this data</h3>
+        <span class="nf-pill bad">No data</span>
+        <p class="nf-note">The files describe defendants only; there are no victim fields.</p>
+      </div>
+      <article class="nf-card wide" id="n6">
+        <p class="nf-q">N6 · Nolle prosequi, 2015–2024</p>
+        <h3>Which crimes are nolle prossed, in District vs. Superior Court?</h3>
+        <ul class="nf-legend"><li><i data-draw="swatch" data-i="0"></i>District Court</li><li><i data-draw="swatch" data-i="1"></i>Superior Court</li></ul>
+        <div class="nf-chart tall" id="n6-chart" data-draw="n6" data-source="nolle"></div>
+        <p class="nf-note">% of each court's disposed charges of that type that ended in nolle prosequi. Nolle prosequi with reason SIND (charge moved to Superior Court by indictment) is excluded, since that is routing, not a decision to drop.</p>
+      </article>
+    </div>
+  </section>
+
+  <details id="notes">
+    <summary>Definitions and data notes</summary>
+    <ul>
+      <li><b>Source.</b> Norfolk master dataset: 2026 records request (2017–2025) plus the older WADADAM extract (2005–2016), 597,541 charges. Analysis code: norfolk_analysis.py.</li>
+      <li><b>Case outcome.</b> Most severe outcome among a case's charges: trial conviction, plea / guilty, CWOF, diversion (pretrial probation, filed without change of plea), acquittal, dismissal (all dismissals and nolle prosequi), moved to Superior (indictment routing), civil.</li>
+      <li><b>Trial conviction</b> = guilty, bench verdict or jury verdict codes. "Plea" in Norfolk is a container code; the reason code splits it into CWOF, pretrial probation and guilty pleas.</li>
+      <li><b>Excluded.</b> Cases whose most serious charge is motor vehicle or OUI; open cases (outcomes, timing); placeholder dates (before 1980, after 2027, disposed before filed).</li>
+      <li><b>Unknown race</b> is kept as its own group. Race and sex are blank for all 2005–2016 cases.</li>
+    </ul>
+  </details>
+</div>
+
+<script>
+/* Each dataset is one table of the attached file norfolk_tables.json. */
+['volume','outcomes','sentences','sentence_by_offense','time','disparity','controls','special_outcomes','courts','towns','charging_trends','nolle'].forEach((id) => {
+  dash.loader(id, {description: 'Takes the "' + id + '" table from norfolk_tables.json.', fn: ({answer}) => answer[id]});
+});
+</script>
+
+<script>
+/* Shared chart helpers */
+window.NF = (() => {
+  const fmt = {
+    int: d3.format(','), pct: (v) => d3.format('.1f')(v) + '%', dec1: d3.format('.1f'),
+    signed: (v) => (v > 0 ? '+' : v < 0 ? '−' : '') + d3.format('.1f')(Math.abs(v)) + '%',
+    ratio: (v) => d3.format('.2f')(v) + '×'
+  };
+  const color = (i) => dash.colors[i % dash.colors.length];
+  const OUT6 = [['dismissal','Dismissal'],['plea_guilty','Plea / guilty'],['cwof','CWOF'],['diversion','Diversion'],['trial_conviction','Trial conviction'],['acquittal','Acquittal']];
+  const SENT = [['incarceration','Incarceration'],['suspended_split','Suspended / split'],['probation','Probation'],['fine','Fine'],['filed_other','Filed / other']];
+  function state(el, ids) {
+    for (const id of ids) {
+      const d = dash.data(id);
+      if (d.status === 'loading' || d.status === 'connect') { el.replaceChildren(); return null; }
+      if (d.status !== 'ok') { el.textContent = 'Failed to load'; return null; }
+    }
+    return ids.map((id) => dash.data(id).data);
+  }
+  function tip(el) {
+    const t = document.createElement('div'); t.className = 'nf-tip'; t.hidden = true; el.appendChild(t);
+    return {
+      show(ev, lines) {
+        t.replaceChildren(...lines.map((s) => { const d = document.createElement('div'); d.textContent = s; return d; }));
+        t.hidden = false;
+        const r = el.getBoundingClientRect(); const p = ev.touches ? ev.touches[0] : ev;
+        let x = p.clientX - r.left + 12, y = p.clientY - r.top + 12;
+        if (x + t.offsetWidth > el.clientWidth) x = Math.max(0, p.clientX - r.left - t.offsetWidth - 12);
+        t.style.left = x + 'px'; t.style.top = y + 'px';
+      },
+      hide() { t.hidden = true; }
+    };
+  }
+  function svg(el, h, label) {
+    el.replaceChildren();
+    const w = Math.max(280, el.clientWidth);
+    const s = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${w} ${h}`).attr('height', h)
+      .attr('role', 'img').attr('aria-label', label);
+    return {s, w};
+  }
+  function textW(s, strs) {
+    let m = 0; const t = s.append('text');
+    for (const x of strs) { t.text(x); m = Math.max(m, t.node().getComputedTextLength()); }
+    t.remove(); return m;
+  }
+  function hover(sel, tt, lines) {
+    sel.on('mousemove', (ev, d) => tt.show(ev, lines(d))).on('mouseleave', () => tt.hide())
+       .on('touchstart', (ev, d) => tt.show(ev, lines(d)), {passive: true});
+  }
+  /* Line chart: rows sorted by x, series [{key,label}] */
+  function lines(el, rows, x, series, o = {}) {
+    const H = o.h || 240; const {s, w} = svg(el, H, o.label);
+    const tt = tip(el);
+    const all = series.flatMap((se) => rows.map((r) => r[se.key])).filter((v) => v != null);
+    const ylog = o.log;
+    const y = (ylog ? d3.scaleLog().domain([Math.max(1, d3.min(all) * 0.8), d3.max(all) * 1.15]) : d3.scaleLinear().domain([0, d3.max(all) * 1.1])).nice();
+    y.range([H - 24, 10]);
+    let yt = ylog ? [5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000].filter((v) => v >= y.domain()[0] && v <= y.domain()[1]) : y.ticks(5);
+    if (ylog) { const keep = []; yt.forEach((v) => { if (!keep.length || y(keep[keep.length - 1]) - y(v) >= 22) keep.push(v); }); yt = keep; }
+    const yf = o.yfmt || d3.format('~s');
+    const ml = textW(s, yt.map(yf)) + 10, mr = o.endLabels ? textW(s, series.map((se) => se.label)) + 14 : 12, mt = 10, mb = 24;
+    const xs = d3.scalePoint().domain(rows.map((r) => r[x])).range([ml, w - mr]);
+    y.range([H - mb, mt]);
+    if (o.band) {
+      const a = xs(o.band[0]), b = xs(o.band[1]);
+      if (a != null && b != null) s.append('rect').attr('x', a - 6).attr('width', b - a + 12).attr('y', mt).attr('height', H - mb - mt).style('fill', 'var(--cds-chart-muted)').style('opacity', .18);
+    }
+    s.append('g').attr('class', 'grid').selectAll('line').data(yt).join('line').attr('x1', ml).attr('x2', w - mr).attr('y1', y).attr('y2', y);
+    s.append('g').selectAll('text').data(yt).join('text').attr('x', ml - 6).attr('y', y).attr('dy', '.32em').attr('text-anchor', 'end').text(yf);
+    const every = Math.ceil(rows.length / Math.max(2, Math.floor((w - ml - mr) / 44)));
+    s.append('g').selectAll('text').data(rows.filter((r, i) => (rows.length - 1 - i) % every === 0)).join('text')
+      .attr('x', (r) => xs(r[x])).attr('y', H - 6).attr('text-anchor', 'middle').text((r) => r[x]);
+    series.forEach((se, i) => {
+      const c = se.color || color(se.ci ?? i);
+      const pts = rows.filter((r) => r[se.key] != null);
+      s.append('path').datum(pts).attr('fill', 'none').style('stroke', c).attr('stroke-width', 2)
+        .attr('d', d3.line().x((r) => xs(r[x])).y((r) => y(r[se.key])));
+      const dots = s.append('g').selectAll('circle').data(pts).join('circle').attr('cx', (r) => xs(r[x])).attr('cy', (r) => y(r[se.key]))
+        .attr('r', 3).style('fill', c);
+      hover(dots, tt, (r) => [`${r[x]} · ${se.label}`, (o.tfmt || yf)(r[se.key])]);
+      if (o.endLabels && pts.length) {
+        const last = pts[pts.length - 1];
+        se._y = y(last[se.key]); se._x = xs(last[x]);
+      }
+    });
+    if (o.endLabels) {
+      const placed = series.filter((se) => se._y != null).sort((a, b) => a._y - b._y);
+      for (let i = 1; i < placed.length; i++) if (placed[i]._y - placed[i - 1]._y < 13) placed[i]._y = placed[i - 1]._y + 13;
+      placed.forEach((se) => s.append('text').attr('x', se._x + 8).attr('y', se._y).attr('dy', '.32em').attr('class', 'lbl-strong').text(se.label));
+    }
+  }
+  /* Horizontal 100% stacked bars */
+  function stack(el, rows, lab, cats, o = {}) {
+    const bh = o.bh || 22, gap = 8;
+    const H = rows.length * (bh + gap) + 24; const {s, w} = svg(el, H, o.label);
+    const tt = tip(el);
+    const ml = textW(s, rows.map((r) => String(r[lab]))) + 12, mr = 8;
+    const x = d3.scaleLinear().domain([0, 100]).range([ml, w - mr]);
+    [0, 25, 50, 75, 100].forEach((v) => {
+      s.append('line').attr('class', 'ref').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 0).attr('y2', H - 20).style('opacity', v % 50 ? 0 : .6);
+      s.append('text').attr('x', x(v)).attr('y', H - 4).attr('text-anchor', 'middle').text(v + '%');
+    });
+    rows.forEach((r, i) => {
+      const yy = i * (bh + gap);
+      s.append('text').attr('x', ml - 8).attr('y', yy + bh / 2).attr('dy', '.32em').attr('text-anchor', 'end')
+        .attr('class', o.strong && o.strong(r) ? 'lbl-strong' : null).text(r[lab]);
+      let acc = 0; const tot = d3.sum(cats, ([k]) => r[k] || 0) || 100;
+      cats.forEach(([k, name], ci) => {
+        const v = (r[k] || 0) / tot * 100; const x0 = x(acc); acc += v;
+        const rect = s.append('rect').attr('x', x0).attr('y', yy).attr('height', bh).attr('width', Math.max(0, x(acc) - x0)).style('fill', color(ci));
+        rect.datum(r); hover(rect, tt, () => [`${r[lab]} · ${name}`, fmt.pct(r[k] || 0)]);
+        if (x(acc) - x0 > 34) s.append('text').attr('class', 'in-bar').attr('x', (x0 + x(acc)) / 2).attr('y', yy + bh / 2).attr('dy', '.32em')
+          .attr('text-anchor', 'middle').style('pointer-events', 'none').text(Math.round(r[k]) + '%');
+      });
+    });
+  }
+  /* Grouped dots on a shared % axis: rows x series */
+  function dots(el, rows, lab, series, o = {}) {
+    const rh = o.rh || 30;
+    const H = rows.length * rh + 26; const {s, w} = svg(el, H, o.label);
+    const tt = tip(el);
+    const ml = textW(s, rows.map((r) => String(r[lab]))) + 14;
+    const vals = rows.flatMap((r) => series.map(([k]) => r[k])).filter((v) => v != null);
+    const mr = o.ratio ? 54 : 12;
+    const x = d3.scaleLinear().domain([0, Math.max(10, d3.max(vals) * 1.08)]).nice().range([ml, w - mr]);
+    x.ticks(Math.max(2, Math.min(5, Math.floor((w - ml - mr) / 60)))).forEach((v) => {
+      s.append('line').attr('class', 'ref').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 0).attr('y2', H - 22).style('opacity', .35);
+      s.append('text').attr('x', x(v)).attr('y', H - 5).attr('text-anchor', 'middle').text(v + '%');
+    });
+    rows.forEach((r, i) => {
+      const yy = i * rh + rh / 2;
+      if (o.sep && o.sep(r, i)) s.append('line').attr('x1', 0).attr('x2', w).attr('y1', i * rh).attr('y2', i * rh).style('stroke', 'var(--color-border-line)');
+      s.append('text').attr('x', ml - 10).attr('y', yy).attr('dy', '.32em').attr('text-anchor', 'end').attr('class', o.strong && o.strong(r) ? 'lbl-strong' : null).text(r[lab]);
+      const pv = series.map(([k]) => r[k]).filter((v) => v != null);
+      if (pv.length > 1) s.append('line').attr('x1', x(d3.min(pv))).attr('x2', x(d3.max(pv))).attr('y1', yy).attr('y2', yy).style('stroke', 'var(--cds-chart-grid)').attr('stroke-width', 3);
+      series.forEach(([k, name, nk], si) => {
+        if (r[k] == null) return;
+        const c = s.append('circle').attr('cx', x(r[k])).attr('cy', yy).attr('r', 6).style('fill', color(si));
+        c.datum(r); hover(c, tt, () => [`${r[lab]} · ${name}`, fmt.pct(r[k]) + (nk ? ` · ${fmt.int(r[nk])} cases` : '')]);
+      });
+      if (o.ratio && r[o.ratio] != null) s.append('text').attr('x', w - 4).attr('y', yy).attr('dy', '.32em').attr('text-anchor', 'end').attr('class', 'lbl-strong').text(fmt.ratio(r[o.ratio]));
+    });
+  }
+  return {fmt, color, state, tip, svg, textW, hover, lines, stack, dots, OUT6, SENT};
+})();
+</script>
+
+<script>
+/* Numbers inside sentences */
+dash.draw('num', (el) => {
+  const id = el.dataset.source, d = dash.data(id);
+  if (d.status !== 'ok') { el.textContent = '—'; return; }
+  const want = new URLSearchParams(el.dataset.where.replace(/%20/g, '+'));
+  const row = d.data.find((r) => [...want].every(([k, v]) => String(r[k]) === v));
+  const v = row ? row[el.dataset.field] : null;
+  el.textContent = v == null ? '—' : NF.fmt[el.dataset.fmt](+v);
+});
+/* Legends and swatches that use the chart colors */
+dash.draw('legend', (ul) => {
+  const set = ul.dataset.set === 'sentences' ? NF.SENT : NF.OUT6;
+  ul.replaceChildren(...set.map(([, name], i) => {
+    const li = document.createElement('li'); const sw = document.createElement('i'); sw.style.background = NF.color(i);
+    li.append(sw, document.createTextNode(name)); return li;
+  }));
+});
+dash.draw('swatch', (el) => { el.style.background = NF.color(+el.dataset.i); });
+
+dash.draw('q1', (el) => {
+  const got = NF.state(el, ['volume']); if (!got) return;
+  NF.lines(el, got[0], 'year', [{key: 'cases', label: 'Cases filed'}], {label: 'Cases filed per year, 2005–2024', yfmt: d3.format(','), band: [2017, 2024]});
+});
+dash.draw('q2', (el) => {
+  const got = NF.state(el, ['volume']); if (!got) return;
+  NF.lines(el, got[0], 'year', [{key: 'per_10k', label: 'Cases per 10,000 residents', ci: 1}], {label: 'Cases filed per 10,000 residents, 2005–2024', yfmt: d3.format('d'), tfmt: NF.fmt.dec1, band: [2017, 2024]});
+});
+dash.draw('q3', (el) => {
+  const got = NF.state(el, ['outcomes']); if (!got) return;
+  NF.stack(el, got[0], 'period', NF.OUT6, {label: 'Share of disposed cases by outcome, overall and by filing year', strong: (r) => r.period.includes('–')});
+});
+dash.draw('q4', (el) => {
+  const got = NF.state(el, ['sentences']); if (!got) return;
+  const rows = got[0];
+  const {s, w} = NF.svg(el, rows.length * 34 + 10, 'Share of convicted cases by most severe sentence'); const tt = NF.tip(el);
+  const ml = NF.textW(s, rows.map((r) => r.sentence)) + 12;
+  const x = d3.scaleLinear().domain([0, d3.max(rows, (r) => r.pct) * 1.15]).range([ml, w - 48]);
+  rows.forEach((r, i) => {
+    const y = i * 34;
+    s.append('text').attr('x', ml - 8).attr('y', y + 12).attr('dy', '.32em').attr('text-anchor', 'end').text(r.sentence);
+    const b = s.append('rect').attr('x', ml).attr('y', y).attr('height', 24).attr('width', x(r.pct) - ml)
+      .style('fill', r.sentence === 'Missing' ? 'var(--cds-chart-muted)' : NF.color(i));
+    b.datum(r); NF.hover(b, tt, () => [r.sentence, `${NF.fmt.pct(r.pct)} · ${NF.fmt.int(r.cases)} cases`]);
+    s.append('text').attr('x', x(r.pct) + 6).attr('y', y + 12).attr('dy', '.32em').attr('class', 'lbl-strong').text(NF.fmt.pct(r.pct));
+  });
+});
+dash.draw('q4b', (el) => {
+  const got = NF.state(el, ['sentence_by_offense']); if (!got) return;
+  NF.stack(el, got[0].slice().reverse(), 'offense', NF.SENT, {label: 'Sentence mix of convicted cases by offense group'});
+});
+dash.draw('q6', (el) => {
+  const got = NF.state(el, ['time']); if (!got) return;
+  const rows = got[0].filter((r) => r.kind === el.dataset.kind);
+  const H = rows.length * 26 + 26; const {s, w} = NF.svg(el, H, `Days from filing to disposition by ${el.dataset.kind.toLowerCase()}`); const tt = NF.tip(el);
+  const ml = NF.textW(s, rows.map((r) => r.group)) + 12;
+  const x = d3.scaleLinear().domain([0, d3.max(got[0], (r) => r.p75_days)]).nice().range([ml, w - 40]);
+  x.ticks(Math.max(2, Math.min(5, Math.floor((w - ml) / 70)))).forEach((v) => {
+    s.append('line').attr('class', 'ref').attr('x1', x(v)).attr('x2', x(v)).attr('y1', 0).attr('y2', H - 22).style('opacity', .35);
+    s.append('text').attr('x', x(v)).attr('y', H - 5).attr('text-anchor', 'middle').text(d3.format(',')(v));
+  });
+  rows.forEach((r, i) => {
+    const y = i * 26 + 13;
+    s.append('text').attr('x', ml - 8).attr('y', y).attr('dy', '.32em').attr('text-anchor', 'end').text(r.group);
+    const g = s.append('g').datum(r);
+    g.append('rect').attr('x', x(r.p25_days)).attr('width', x(r.p75_days) - x(r.p25_days)).attr('y', y - 7).attr('height', 14).attr('rx', 3).style('fill', 'var(--cds-chart-muted)');
+    g.append('circle').attr('cx', x(r.median_days)).attr('cy', y).attr('r', 5).style('fill', 'var(--color-fg)');
+    g.append('text').attr('x', x(r.p75_days) + 6).attr('y', y).attr('dy', '.32em').attr('class', 'lbl-strong').text(d3.format(',.0f')(r.median_days));
+    NF.hover(g, tt, () => [r.group, `Median ${d3.format(',.0f')(r.median_days)} days`, `Middle half ${d3.format(',.0f')(r.p25_days)}–${d3.format(',.0f')(r.p75_days)} days · ${d3.format(',')(r.cases)} cases`]);
+  });
+});
+dash.draw('q7', (el) => {
+  const got = NF.state(el, ['disparity']); if (!got) return;
+  NF.dots(el, got[0], 'group', [['dismissal_pct', 'Dismissed', 'disposed_cases'], ['incarceration_pct', 'Incarcerated', 'convicted_cases']],
+    {label: 'Dismissal and incarceration rates by race and sex', ratio: 'incarceration_ratio', sep: (r, i) => i > 0 && r.dimension === 'Sex' && got[0][i - 1].dimension === 'Race', strong: (r) => r.group === 'White' || r.group === 'Male'});
+});
+dash.draw('q8', (el) => {
+  const got = NF.state(el, ['controls']); if (!got) return;
+  const rows = got[0].map((r) => ({...r, label: `${r.offense} · ${r.prior_record === 'No prior cases' ? 'no prior' : '1+ prior'}`}));
+  NF.dots(el, rows, 'label', [['white_pct', 'White', 'white_n'], ['black_pct', 'Black', 'black_n'], ['hispanic_pct', 'Hispanic', 'hispanic_n']],
+    {label: 'Incarceration rate by race within offense group and prior record', rh: 26, sep: (r, i) => i > 0 && i % 2 === 0});
+});
+dash.draw('n1', (el) => {
+  const got = NF.state(el, ['special_outcomes']); if (!got) return;
+  const crime = el.dataset.crime; const rows = got[0].filter((r) => r.crime === crime);
+  el.replaceChildren();
+  const h = document.createElement('p'); h.className = 'nf-q'; h.textContent = crime; el.appendChild(h);
+  const box = document.createElement('div'); box.style.position = 'relative'; el.appendChild(box);
+  NF.lines(box, rows, 'year', [{key: 'dismissal', label: 'Dismissal', ci: 0}, {key: 'plea_guilty', label: 'Plea / guilty', ci: 1}, {key: 'cwof', label: 'CWOF', ci: 2}, {key: 'trial_conviction', label: 'Trial conviction', ci: 4}],
+    {label: `${crime}: share of disposed cases by outcome, 2015–2024`, h: 210, yfmt: (v) => v + '%', tfmt: NF.fmt.pct});
+});
+dash.draw('n2', (el) => {
+  const got = NF.state(el, ['courts']); if (!got) return;
+  NF.stack(el, got[0], 'court', NF.OUT6, {label: 'Outcome mix by district court'});
+});
+dash.draw('n5', (el) => {
+  const got = NF.state(el, ['charging_trends']); if (!got) return;
+  NF.lines(el, got[0], 'year', [{key: 'domestic_violence', label: 'Domestic violence'}, {key: 'sexual_assault', label: 'Sexual assault'}, {key: 'child_abuse', label: 'Child abuse'}, {key: 'elder_abuse', label: 'Elder abuse'}, {key: 'hate_crimes', label: 'Hate crimes'}],
+    {label: 'Cases filed per year by crime type, 2015–2024, log scale', log: true, yfmt: d3.format(','), h: 260});
+});
+dash.draw('n3', (el) => {
+  const got = NF.state(el, ['towns']); if (!got) return;
+  const rows = got[0];
+  const towns = [...new Set(rows.map((r) => r.town))], offs = [...new Set(rows.map((r) => r.offense))];
+  el.replaceChildren();
+  const cw = 46, rh = 22;
+  const probe = d3.select(el).append('svg').attr('width', 10).attr('height', 10);
+  const ml = NF.textW(probe, towns) + 10, mt = NF.textW(probe, offs) * 0.72 + 14; probe.remove();
+  const mrr = 60, w = Math.max(el.clientWidth, ml + offs.length * cw + mrr), cwx = Math.max(cw, (w - ml - mrr) / offs.length), H = mt + towns.length * rh + 4;
+  el.style.minWidth = (ml + offs.length * cw + mrr) + 'px';
+  const s = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${w} ${H}`).attr('height', H).attr('role', 'img').attr('aria-label', 'Share of each police department’s cases by offense group');
+  const tt = NF.tip(el);
+  const max = d3.max(rows, (r) => r.pct);
+  offs.forEach((o, j) => s.append('text').attr('transform', `translate(${ml + j * cwx + cwx / 2},${mt - 6}) rotate(-45)`).text(o));
+  towns.forEach((t, i) => {
+    const y = mt + i * rh;
+    s.append('text').attr('x', ml - 8).attr('y', y + rh / 2).attr('dy', '.32em').attr('text-anchor', 'end').attr('class', t.startsWith('Norfolk') ? 'lbl-strong' : null).text(t);
+    rows.filter((r) => r.town === t).forEach((r) => {
+      const j = offs.indexOf(r.offense);
+      const c = s.append('rect').attr('x', ml + j * cwx + 1).attr('y', y + 1).attr('width', cwx - 2).attr('height', rh - 2).attr('rx', 2)
+        .style('fill', NF.color(0)).style('opacity', 0.06 + 0.94 * Math.sqrt(r.pct / max));
+      c.datum(r); NF.hover(c, tt, () => [`${r.town} · ${r.offense}`, `${NF.fmt.pct(r.pct)} of ${d3.format(',')(r.town_cases)} cases`]);
+      if (r.pct >= 5) s.append('text').attr('x', ml + j * cwx + cwx / 2).attr('y', y + rh / 2).attr('dy', '.32em').attr('text-anchor', 'middle')
+        .attr('class', r.pct / max > 0.35 ? 'in-bar' : 'lbl-strong').style('pointer-events', 'none').text(Math.round(r.pct));
+    });
+  });
+});
+dash.draw('n6', (el) => {
+  const got = NF.state(el, ['nolle']); if (!got) return;
+  const rows = got[0].slice().sort((a, b) => b.superior_rate_pct - a.superior_rate_pct);
+  NF.dots(el, rows, 'offense', [['district_rate_pct', 'District Court'], ['superior_rate_pct', 'Superior Court']], {label: 'Nolle prosequi rate by offense, District vs. Superior Court', rh: 26});
+});
+</script>

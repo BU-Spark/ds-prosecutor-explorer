@@ -1,0 +1,14 @@
+[theme]
+base = "light"
+primaryColor = "#1f4e8c"
+backgroundColor = "#f5f7fa"
+secondaryBackgroundColor = "#eef1f5"
+textColor = "#1f2937"
+font = "sans serif"
+
+[browser]
+gatherUsageStats = false
+
+[client]
+toolbarMode = "minimal"   # hide the Deploy button and developer menu items
+showSidebarNavigation = false
