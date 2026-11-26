@@ -1,0 +1,12 @@
+,n,events,missing_sentence,rate_pct,suppressed,ratio_vs_White,missing_sentence_pct,metric,group
+0,84,45.0,78.0,53.57142857142857,False,1.192142357292812,,dismissal,Asian
+1,4817,2467.0,3762.0,51.21444882707079,False,1.1396917233735837,,dismissal,Black
+2,41,16.0,38.0,39.02439024390244,False,0.8684224001092354,,dismissal,Code BR (unverified)
+3,3,,,,True,,,dismissal,Code EI (unverified)
+4,4,,,,True,,,dismissal,Code I (unverified)
+5,50,20.0,39.0,40.0,False,0.8901329601119664,,dismissal,Code M (unverified)
+6,3,,,,True,,,dismissal,Code MNA (unverified)
+7,1173,693.0,1012.0,59.07928388746803,False,1.3147104462011778,,dismissal,Hispanic (source race field)
+8,635,378.0,589.0,59.52755905511811,False,1.3246860587493043,,dismissal,Missing
+9,718,448.0,674.0,62.39554317548747,False,1.3885082386147665,,dismissal,Unknown (U)
+10,22260,10003.0,17648.0,44.937106918238996,False,1.0,,dismissal,White

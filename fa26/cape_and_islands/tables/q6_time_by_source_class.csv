@@ -1,0 +1,4 @@
+offense,n,median,q1,q3
+Felony,7639,238.0,134.0,437.0
+Misdemeanor M+,18469,155.0,73.0,298.0
+Misdemeanor M-,9952,90.0,55.0,168.0

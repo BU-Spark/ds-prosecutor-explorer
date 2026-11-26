@@ -1,0 +1,14 @@
+.execution/
+__pycache__/
+.ipynb_checkpoints/
+.venv/
+*.xlsx
+*.xls
+*.parquet
+*.sqlite
+*.db
+source_inspection.log
+inspect_sources.py
+legacy_mapping_reference.txt
+
+*.zip

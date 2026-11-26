@@ -1,0 +1,28 @@
+,raw_disposition,outcome,charge_rows
+0,Accord and Satisfaction,Other,10
+1,Conflict / Transfer,Other,11
+2,Continued Without Change of Plea,Other,1079
+3,Continued Without Finding,CWOF,156
+4,Continued Without Finding,Other,36
+5,Converted to Civil,Other,353
+6,Directed Verdict,Acquittal,26
+7,Dismissed,Dismissal,21407
+8,Dismissed - Show Cause,Dismissal,37
+9,Dismissed Without Prejudice COVID19,Dismissal,430
+10,Dismissed/Indicted/Arraigned,Dismissal,220
+11,Filed Without Change of Plea,Other,1
+12,Guilty,Other,1053
+13,No Bill,Other,1
+14,Nolle Prosequi,Dismissal,7278
+15,Not Guilty,Acquittal,306
+16,Not Guilty Insanity,Acquittal,12
+17,Not Responsible,Other,101
+18,Plea,CWOF,10357
+19,Plea,Other,3729
+20,Plea,Plea,24881
+21,Required Finding of Not Guilty,Acquittal,3
+22,Responsible,Other,72
+23,Revised Disposition,Other,4
+24,Trial,Acquittal,570
+25,Trial,Other,440
+26,Trial,Trial Conviction,305

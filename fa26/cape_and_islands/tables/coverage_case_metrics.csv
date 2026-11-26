@@ -1,0 +1,5 @@
+field,denominator,missing_or_conflicting,pct_missing,status
+race,36413,6140,16.862109686101117,ok
+sex,36413,566,1.5543899156894516,ok
+court,36413,2,0.005492543871694175,ok
+sentence,5796,2944,50.79365079365079,insufficient data

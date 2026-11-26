@@ -1,0 +1,11 @@
+,n,events,missing_sentence,rate_pct,suppressed,ratio_vs_White,missing_sentence_pct,metric,group
+0,117,69.0,111.0,58.97435897435897,False,1.0426022905337755,,dismissal,Asian
+1,4517,2889.0,4088.0,63.95837945539075,False,1.1307143321051008,,dismissal,Black
+2,361,279.0,353.0,77.28531855955679,False,1.3663200678427088,,dismissal,Hispanic (source race field)
+3,6140,4170.0,5937.0,67.91530944625407,False,1.2006685349773965,,dismissal,Missing
+4,700,486.0,681.0,69.42857142857143,False,1.2274213549551045,,dismissal,Unknown (U)
+5,17,,,,True,,,dismissal,Unmapped code: C
+6,21,,,,True,,,dismissal,Unmapped code: CV
+7,3,,,,True,,,dismissal,Unmapped code: EI
+8,179,97.0,154.0,54.18994413407821,False,0.9580190588023495,,dismissal,Unmapped code: I
+9,24358,13778.0,22198.0,56.56457837260859,False,1.0,,dismissal,White
